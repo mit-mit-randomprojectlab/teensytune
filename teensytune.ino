@@ -34,6 +34,21 @@ https://www.dfrobot.com/wiki/index.php/I2C/TWI_LCD1602_Module_(SKU:_DFR0063)
 #include <Adafruit_MCP23008.h>
 #include <Adafruit_NeoPixel.h>
 
+// Instrument list (General User)
+char instr_list[] = {0,3,6,17,8,11,10,
+  2,4,5,25,26,29,
+  40,45,48,46,57,61,68,50,53,47,114,
+  1,80,38,86,81,88,89,95,96,97,
+  76,55,124,0,0,0,0,0,0,0,0,0,0,0,0};
+
+const char* const instr_names[] = {"Piano C1","Honky C#1","Harpsichord D1","Organ D#1","Celeste E1","Vibraphone F1","Music Box F#1",
+  "Elec Piano G1","Rhodes G#1","DX7 Piano A1",
+  "Steel Guitar A#1","Jazz Guitar B1","Overdrive C2",
+  "Violin C#2","Pizzicato D2","Strings D#2","Harp E2","Trombone F2","Brass F#2","Oboe G2","Synth String G#2","Synth Voice A2","Timpani A#2","Steel Drum B2",
+  "Sine C3","Square C#3","Synth Bass D3","Fifth Saw D#3","Saw Decline E3","Fantasia F3","Warm Pad F#3","Sweep Pad G3","Ice Rain G#3","Soundtrack A3",
+  "Bottle A#3","Orch Hit B3","Telephone C4",
+  "Piano","Piano","Piano","Piano","Piano","Piano","Piano","Piano","Piano","Piano","Piano","Piano"};
+
 // Initialise display
 LiquidCrystal_I2C lcd(0x20,16,2);
 
@@ -62,6 +77,7 @@ char keystate_prev[49] = {0,0,0,0,0,0,
 #define CHANSELECT_PIN 3 // MCP
 char main_keyboard_channel = 1;
 int main_keyboard_program = 0;
+int main_keyboard_program_ind = 0;
 int looper_program = 0;
 int looper2_program = 0;
 
@@ -609,7 +625,9 @@ void setup() {
     delay(20);
   }
   lcd.setCursor(0, 0);
-  lcd.print("Prog: 00 Loop:  ");
+  lcd.print("Prog:    Loop:  ");
+  lcd.setCursor(0, 1);
+  lcd.print(instr_names[0]);
   
   // setup pin 13 LED for when keys pressed
   pinMode(13, OUTPUT);
@@ -642,17 +660,23 @@ void loop() {
   if (chansel_waitingforchoice == 1) {
     for (int i = 0; i < 49; i++) {
       if (keystate[i] > 0) { // grab first key that is on
-        main_keyboard_program = i;
+        //main_keyboard_program = i;
+        main_keyboard_program = instr_list[i];
+        main_keyboard_program_ind = i;
         usbMIDI.sendProgramChange(main_keyboard_program,main_keyboard_channel);
         chansel_waitingforchoice = 0;
-        lcd.setCursor(6, 0);
+        /*lcd.setCursor(6, 0);
         if (main_keyboard_program < 10) {
           lcd.print(0);
           lcd.print(main_keyboard_program);
         }
         else {
           lcd.print(main_keyboard_program);
-        }
+        }*/
+        lcd.setCursor(0, 1);
+        lcd.print("                ");
+        lcd.setCursor(0, 1);
+        lcd.print(instr_names[main_keyboard_program_ind]);
         break;
       }
     }
@@ -828,14 +852,18 @@ void loop() {
       drumprog_state = 0;
       lcd.setCursor(0, 0);
       lcd.print("Prog:    Loop:  ");
-      lcd.setCursor(6, 0);
+      /*lcd.setCursor(6, 0);
       if (main_keyboard_program < 10) {
         lcd.print(0);
         lcd.print(main_keyboard_program);
       }
       else {
         lcd.print(main_keyboard_program);
-      }
+      }*/
+      lcd.setCursor(0, 1);
+      lcd.print("                ");
+      lcd.setCursor(0, 1);
+      lcd.print(instr_names[main_keyboard_program_ind]);
       if (looper_has_tune == 1) {
           lcd.setCursor(14, 0);
           lcd.print("A");
