@@ -8,7 +8,7 @@ and several input controls (including buttons, a potentiometer, LCD two-line cha
 two-axis joystick and neopixels) and outputs MIDI messages across the Teensy USB.
 
 For details on the hardware and contruction process, see:
-TBC
+http://randomprojectlab.blogspot.com.au/2017/12/teensytune-teensy-based-midi.html
 
 Required libraries:
 
